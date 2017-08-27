@@ -1,0 +1,78 @@
+<h1>Bundesbank Webservice v1</h1>
+<pre>
+    <strong>Request:</strong>
+    GET http://{{.Hostname}}:{{.Port}}/bundesbank/v1/query?blz=10010424
+
+    <strong>Description:</strong>
+    Matches a blz against a list of banks. Only full blz's are matched, thus partial blz's will return 404.
+
+    <strong>Resonse Codes:</strong>
+    200: one or more matching banks found
+    404: no matching bank found. reponse body is empty
+
+    <strong>Response Body:</strong>
+    {
+        "Banks": [
+            {
+                "Blz": "10010424",
+                "Bankleitzahlfuehrend": "",
+                "Bezeichnung": "Aareal Bank",
+                "PLZ": "10666",
+                "Kurzbezeichnung": "Aareal Bank",
+                "Pan": "26910",
+                "BIC": "AARBDE5W100",
+                "Pruefzifferberechnungsmethode": "09",
+                "Datensatznummer": "004795",
+                "Aenderungskennzeichen": "U",
+                "Bankleitzahlloeschung": "0",
+                "Nachfolgebankleitzahl": "00000000"
+            },
+            ...
+        ]
+    }
+
+</pre>
+
+<pre>
+    <strong>Request:</strong>
+    GET http://{{.Hostname}}:{{.Port}}/bundesbank/v1/query?bic=AARBDE5W100
+
+    <strong>Resonse Codes:</strong>
+    200: one or more matching banks found
+    404: no matching bank found. reponse body is empty
+
+    <strong>Response Body:</strong>
+    {
+        "Banks": [
+            {
+                "Blz": "10010424",
+                "Bankleitzahlfuehrend": "",
+                "Bezeichnung": "Aareal Bank",
+                ...
+            },
+            ...
+        ]
+    }
+</pre>
+
+<pre>
+    <strong>Request:</strong>
+    GET http://{{.Hostname}}:{{.Port}}/bundesbank/v1/query?name=Aareal
+
+    <strong>Resonse Codes:</strong>
+    200: one or more matching banks found
+    404: no matching bank found. reponse body is empty
+
+    <strong>Response Body:</strong>
+    {
+        "Banks": [
+            {
+                "Blz": "10010424",
+                "Bankleitzahlfuehrend": "",
+                "Bezeichnung": "Aareal Bank",
+                ...
+            },
+            ...
+        ]
+    }
+</pre>
