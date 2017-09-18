@@ -56,31 +56,40 @@ func ImportBundesbankFile(file string) {
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			bank := parseLine(scanner.Text())
-			if bankArray, ok := BanksByPlz[bank.Blz]; ok {
-				BanksByPlz[bank.Blz] = append(bankArray, bank)
-			} else {
-				bankArray := []Bank{bank}
-				BanksByPlz[bank.Blz] = bankArray
-			}
-
-			if bank.BIC != "" {
-				if bankArray, ok := BanksByBic[bank.BIC]; ok {
-					BanksByBic[bank.BIC] = append(bankArray, bank)
-				} else {
-					bankArray := []Bank{bank}
-					BanksByBic[bank.BIC] = bankArray
-				}
-			}
-
-			if bankArray, ok := BanksByBezeichnung[bank.Bezeichnung]; ok {
-				BanksByBezeichnung[bank.Bezeichnung] = append(bankArray, bank)
-			} else {
-				bankArray := []Bank{bank}
-				BanksByBezeichnung[bank.Bezeichnung] = bankArray
-			}
+			addBankToPlzMap(bank)
+			addBankToBicMap(bank)
+			addBankToBezeichnungMap(bank)
 		}
 	} else {
 		panic(err)
+	}
+}
+
+func addBankToBezeichnungMap(bank Bank) {
+	if bankArray, ok := BanksByBezeichnung[bank.Bezeichnung]; ok {
+		BanksByBezeichnung[bank.Bezeichnung] = append(bankArray, bank)
+	} else {
+		bankArray := []Bank{bank}
+		BanksByBezeichnung[bank.Bezeichnung] = bankArray
+	}
+}
+
+func addBankToBicMap(bank Bank) {
+	if bank.BIC != "" {
+		if bankArray, ok := BanksByBic[bank.BIC]; ok {
+			BanksByBic[bank.BIC] = append(bankArray, bank)
+		} else {
+			bankArray := []Bank{bank}
+			BanksByBic[bank.BIC] = bankArray
+		}
+	}
+}
+
+func addBankToPlzMap(bank Bank) {
+	if bankArray, ok := BanksByPlz[bank.Blz]; ok {
+		BanksByPlz[bank.Blz] = append(bankArray, bank)
+	} else {
+		BanksByPlz[bank.Blz] = []Bank{bank}
 	}
 }
 

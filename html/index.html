@@ -6,7 +6,7 @@
     <strong>Description:</strong>
     Matches a blz against a list of banks. Only full blz's are matched, thus partial blz's will return 404.
 
-    <strong>Resonse Codes:</strong>
+    <strong>Response Codes:</strong>
     200: one or more matching banks found
     404: no matching bank found. reponse body is empty
 
@@ -37,7 +37,10 @@
     <strong>Request:</strong>
     GET http://{{.Hostname}}:{{.Port}}/bundesbank/v1/query?bic=AARBDE5W100
 
-    <strong>Resonse Codes:</strong>
+    <strong>Description:</strong>
+    Matches a bic against a list of banks. Only full bic's are matched, thus partial bic's will return 404.
+
+    <strong>Response Codes:</strong>
     200: one or more matching banks found
     404: no matching bank found. reponse body is empty
 
@@ -57,9 +60,13 @@
 
 <pre>
     <strong>Request:</strong>
-    GET http://{{.Hostname}}:{{.Port}}/bundesbank/v1/query?name=Aareal
+    GET http://{{.Hostname}}:{{.Port}}/bundesbank/v1/query?name=Aareal+Bank
 
-    <strong>Resonse Codes:</strong>
+    <strong>Description:</strong>
+    Matches a bank name against a list of banks. Currently only full names's are matched, thus partial names's
+    will return 404.
+
+    <strong>Response Codes:</strong>
     200: one or more matching banks found
     404: no matching bank found. reponse body is empty
 

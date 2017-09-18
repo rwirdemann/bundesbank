@@ -9,7 +9,7 @@ func GetHostname() string {
 		return "localhost"
 	}
 
-	if (runtime.GOOS == "linux") {
+	if runtime.GOOS == "linux" {
 		return "94.130.79.196"
 	}
 

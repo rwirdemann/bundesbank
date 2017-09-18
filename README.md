@@ -16,17 +16,23 @@ go install bitbucket.org/rwirdemann/bundesbank
 ## Start the service
 
 ```
-bundesbank -f blz-file.txt // UTF-8
+bundesbank -f blz-file.txt // needs to be UTF-8
 ```
 
-## Regenerate html assets
+## Regenerate HTML assets
 ```
 go-bindata -pkg html -o html/assets.go html/
 ```
  
 ## Test it
 
-curl -s http://localhost:8080/bundesbank/v1?q=10020890 | py -m json.tool
+```
+# Query by blz
+curl -s http://localhost:8091/bundesbank/v1/query?blz=10020890 | py -m json.tool
+
+# Query by bank name
+curl -s http://localhost:8091/bundesbank/v1/query?name=UniCredit+Bank+-+HypoVereinsbank | py -m json.tool
+```
 
 ## Build for different Linux
 ```
