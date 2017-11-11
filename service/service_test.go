@@ -14,9 +14,9 @@ func init()  {
 func TestQueryByBlzMatchesOneBank(t *testing.T) {
 
 	// When: blz is queried
-	req, _ := http.NewRequest("GET", "/bundesbank/v1/query?blz=10010424", nil)
+	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?blz=10010424", nil)
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(query)
+	handler := http.HandlerFunc(banks)
 	handler.ServeHTTP(rr, req)
 
 	// Then: status is ok
@@ -30,9 +30,9 @@ func TestQueryByBlzMatchesOneBank(t *testing.T) {
 func TestQueryByBlzMatchesMoreBanks(t *testing.T) {
 
 	// When: blz is queried
-	req, _ := http.NewRequest("GET", "/bundesbank/v1/query?blz=10020890", nil)
+	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?blz=10020890", nil)
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(query)
+	handler := http.HandlerFunc(banks)
 	handler.ServeHTTP(rr, req)
 
 	// Then: status is ok
@@ -46,9 +46,9 @@ func TestQueryByBlzMatchesMoreBanks(t *testing.T) {
 func TestNotFound(t *testing.T) {
 
 	// When: blz unknown is queried
-	req, _ := http.NewRequest("GET", "/bundesbank/v1/query?blz=1002089", nil)
+	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?blz=1002089", nil)
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(query)
+	handler := http.HandlerFunc(banks)
 	handler.ServeHTTP(rr, req)
 
 	// Then: status is ok
@@ -62,9 +62,9 @@ func TestNotFound(t *testing.T) {
 func TestQueryByBicMatchesOneBank(t *testing.T) {
 
 	// When: bic is queried
-	req, _ := http.NewRequest("GET", "/bundesbank/v1/query?bic=AARBDE5W100", nil)
+	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?bic=AARBDE5W100", nil)
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(query)
+	handler := http.HandlerFunc(banks)
 	handler.ServeHTTP(rr, req)
 
 	// Then: status is ok
@@ -78,9 +78,9 @@ func TestQueryByBicMatchesOneBank(t *testing.T) {
 func TestQueryByNameMatchesOneBank(t *testing.T) {
 
 	// When: name is queried
-	req, _ := http.NewRequest("GET", "/bundesbank/v1/query?name=Aareal+Bank", nil)
+	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?name=Aareal+Bank", nil)
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(query)
+	handler := http.HandlerFunc(banks)
 	handler.ServeHTTP(rr, req)
 
 	// Then: status is ok

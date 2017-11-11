@@ -21,7 +21,7 @@ const port = 8091
 func StartService() {
 	r := http.NewServeMux()
 	r.HandleFunc("/bundesbank", index)
-	r.HandleFunc("/bundesbank/v1/query", query)
+	r.HandleFunc("/bundesbank/v1/banks", banks)
 
 	hostname := util.GetHostname()
 	log.Printf("Visit http://%s:%d/bundesbank for API docs...", hostname, port)
@@ -32,7 +32,7 @@ type ResponseWrapper struct {
 	Banks []Bank
 }
 
-func query(w http.ResponseWriter, r *http.Request) {
+func banks(w http.ResponseWriter, r *http.Request) {
 	if blz, ok := r.URL.Query()["blz"]; ok {
 		queryByBlz(blz[0], w)
 	}

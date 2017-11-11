@@ -28,10 +28,11 @@ go-bindata -pkg html -o html/assets.go html/
 
 ```
 # Query by blz
-curl -s http://localhost:8091/bundesbank/v1/query?blz=10020890 | py -m json.tool
+curl -s http://localhos
+t:8091/bundesbank/v1/banks?blz=10020890 | py -m json.tool
 
 # Query by bank name
-curl -s http://localhost:8091/bundesbank/v1/query?name=UniCredit+Bank+-+HypoVereinsbank | py -m json.tool
+curl -s http://localhost:8091/bundesbank/v1/banks?name=UniCredit+Bank+-+HypoVereinsbank | py -m json.tool
 ```
 
 ## Build for different Linux
