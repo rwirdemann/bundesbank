@@ -4,31 +4,17 @@ import (
 	"strings"
 	"os"
 	"bufio"
+	"bitbucket.org/rwirdemann/bundesbank/domain"
 )
-
-type Bank struct {
-	Blz                           string
-	Bankleitzahlfuehrend          string
-	Bezeichnung                   string
-	PLZ                           string
-	Kurzbezeichnung               string
-	Pan                           string
-	BIC                           string
-	Pruefzifferberechnungsmethode string
-	Datensatznummer               string
-	Aenderungskennzeichen         string
-	Bankleitzahlloeschung         string
-	Nachfolgebankleitzahl         string
-}
 
 type Field struct {
 	Start int
 	End   int
 }
 
-var BanksByPlz map[string][]Bank
-var BanksByBic map[string][]Bank
-var BanksByBezeichnung map[string][]Bank
+var BanksByPlz map[string][]domain.Bank
+var BanksByBic map[string][]domain.Bank
+var BanksByBezeichnung map[string][]domain.Bank
 
 var Fields = map[string]Field{
 	"blz":                           Field{Start: 0, End: 8},
@@ -46,9 +32,9 @@ var Fields = map[string]Field{
 }
 
 func ImportBundesbankFile(file string) {
-	BanksByPlz = make(map[string][]Bank)
-	BanksByBic = make(map[string][]Bank)
-	BanksByBezeichnung = make(map[string][]Bank)
+	BanksByPlz = make(map[string][]domain.Bank)
+	BanksByBic = make(map[string][]domain.Bank)
+	BanksByBezeichnung = make(map[string][]domain.Bank)
 
 	if file, err := os.Open(file); err == nil {
 		defer file.Close()
@@ -65,36 +51,36 @@ func ImportBundesbankFile(file string) {
 	}
 }
 
-func addBankToBezeichnungMap(bank Bank) {
+func addBankToBezeichnungMap(bank domain.Bank) {
 	if bankArray, ok := BanksByBezeichnung[bank.Bezeichnung]; ok {
 		BanksByBezeichnung[bank.Bezeichnung] = append(bankArray, bank)
 	} else {
-		bankArray := []Bank{bank}
+		bankArray := []domain.Bank{bank}
 		BanksByBezeichnung[bank.Bezeichnung] = bankArray
 	}
 }
 
-func addBankToBicMap(bank Bank) {
+func addBankToBicMap(bank domain.Bank) {
 	if bank.BIC != "" {
 		if bankArray, ok := BanksByBic[bank.BIC]; ok {
 			BanksByBic[bank.BIC] = append(bankArray, bank)
 		} else {
-			bankArray := []Bank{bank}
+			bankArray := []domain.Bank{bank}
 			BanksByBic[bank.BIC] = bankArray
 		}
 	}
 }
 
-func addBankToPlzMap(bank Bank) {
+func addBankToPlzMap(bank domain.Bank) {
 	if bankArray, ok := BanksByPlz[bank.Blz]; ok {
 		BanksByPlz[bank.Blz] = append(bankArray, bank)
 	} else {
-		BanksByPlz[bank.Blz] = []Bank{bank}
+		BanksByPlz[bank.Blz] = []domain.Bank{bank}
 	}
 }
 
-func parseLine(line string) Bank {
-	var b Bank
+func parseLine(line string) domain.Bank {
+	var b domain.Bank
 	b.Blz = line[Fields["blz"].Start:Fields["blz"].End]
 	b.Bezeichnung = strings.Trim(line[Fields["bezeichnung"].Start:Fields["bezeichnung"].End], " ")
 	b.PLZ = strings.Trim(line[Fields["plz"].Start:Fields["plz"].End], " ")

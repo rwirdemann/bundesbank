@@ -1,17 +1,13 @@
 package util
 
 import (
-	"runtime"
+	"os"
 )
 
 func GetHostname() string {
-	if runtime.GOOS == "windows" {
+	if hostname, err := os.Hostname(); err == nil && hostname == "golem" {
 		return "localhost"
 	}
 
-	if runtime.GOOS == "linux" {
-		return "94.130.79.196"
-	}
-
-	return ""
+	return "94.130.79.196"
 }

@@ -8,6 +8,7 @@ import (
 	"bitbucket.org/rwirdemann/bundesbank/util"
 	"github.com/arschles/go-bindata-html-template"
 	"bitbucket.org/rwirdemann/bundesbank/html"
+	"bitbucket.org/rwirdemann/bundesbank/domain"
 )
 
 // Data struct for index.html
@@ -29,7 +30,7 @@ func StartService() {
 }
 
 type ResponseWrapper struct {
-	Banks []Bank
+	Banks []domain.Bank
 }
 
 func banks(w http.ResponseWriter, r *http.Request) {

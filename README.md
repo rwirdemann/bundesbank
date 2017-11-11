@@ -2,10 +2,11 @@
 
 ## TODOs
 
-- query for bic and bank name
-- convert ANSI file automatically to UTF-8
-- listen to file changes
+- Introduce bank repository
+- GET bank by id
 - POST bank, i.e. as mock data for tests
+- listen to file changes
+- convert ANSI file automatically to UTF-8
 
 ## Install
 
@@ -28,11 +29,10 @@ go-bindata -pkg html -o html/assets.go html/
 
 ```
 # Query by blz
-curl -s http://localhos
-t:8091/bundesbank/v1/banks?blz=10020890 | py -m json.tool
+curl -s http://localhost:8091/bundesbank/v1/banks?blz=10020890 | python -m json.tool
 
 # Query by bank name
-curl -s http://localhost:8091/bundesbank/v1/banks?name=UniCredit+Bank+-+HypoVereinsbank | py -m json.tool
+curl -s http://localhost:8091/bundesbank/v1/banks?name=UniCredit+Bank+-+HypoVereinsbank | python -m json.tool
 ```
 
 ## Build for different Linux

@@ -1,7 +1,7 @@
 <h1>Bundesbank Webservice v1</h1>
 <pre>
     <strong>Request:</strong>
-    GET http://{{.Hostname}}:{{.Port}}/bundesbank/v1/query?blz=10010424
+    GET http://{{.Hostname}}:{{.Port}}/bundesbank/v1/banks?blz=10010424
 
     <strong>Description:</strong>
     Matches a blz against a list of banks. Only full blz's are matched, thus partial blz's will return 404.
@@ -35,7 +35,7 @@
 
 <pre>
     <strong>Request:</strong>
-    GET http://{{.Hostname}}:{{.Port}}/bundesbank/v1/query?bic=AARBDE5W100
+    GET http://{{.Hostname}}:{{.Port}}/bundesbank/v1/banks?bic=AARBDE5W100
 
     <strong>Description:</strong>
     Matches a bic against a list of banks. Only full bic's are matched, thus partial bic's will return 404.
@@ -60,7 +60,7 @@
 
 <pre>
     <strong>Request:</strong>
-    GET http://{{.Hostname}}:{{.Port}}/bundesbank/v1/query?name=Aareal+Bank
+    GET http://{{.Hostname}}:{{.Port}}/bundesbank/v1/banks?name=Aareal+Bank
 
     <strong>Description:</strong>
     Matches a bank name against a list of banks. Currently only full names's are matched, thus partial names's
