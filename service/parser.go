@@ -12,10 +12,6 @@ type Field struct {
 	End   int
 }
 
-var BanksByPlz map[string][]domain.Bank
-var BanksByBic map[string][]domain.Bank
-var BanksByBezeichnung map[string][]domain.Bank
-
 var Fields = map[string]Field{
 	"blz":                           {Start: 0, End: 8},
 	"blzfuehrend":                   {Start: 8, End: 9},
@@ -32,50 +28,16 @@ var Fields = map[string]Field{
 }
 
 func ImportBundesbankFile(file string) {
-	BanksByPlz = make(map[string][]domain.Bank)
-	BanksByBic = make(map[string][]domain.Bank)
-	BanksByBezeichnung = make(map[string][]domain.Bank)
-
 	if file, err := os.Open(file); err == nil {
 		defer file.Close()
 
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			bank := parseLine(scanner.Text())
-			addBankToPlzMap(bank)
-			addBankToBicMap(bank)
-			addBankToBezeichnungMap(bank)
+			domain.GetRepositoryInstance().Add(bank)
 		}
 	} else {
 		panic(err)
-	}
-}
-
-func addBankToBezeichnungMap(bank domain.Bank) {
-	if bankArray, ok := BanksByBezeichnung[bank.Bezeichnung]; ok {
-		BanksByBezeichnung[bank.Bezeichnung] = append(bankArray, bank)
-	} else {
-		bankArray := []domain.Bank{bank}
-		BanksByBezeichnung[bank.Bezeichnung] = bankArray
-	}
-}
-
-func addBankToBicMap(bank domain.Bank) {
-	if bank.BIC != "" {
-		if bankArray, ok := BanksByBic[bank.BIC]; ok {
-			BanksByBic[bank.BIC] = append(bankArray, bank)
-		} else {
-			bankArray := []domain.Bank{bank}
-			BanksByBic[bank.BIC] = bankArray
-		}
-	}
-}
-
-func addBankToPlzMap(bank domain.Bank) {
-	if bankArray, ok := BanksByPlz[bank.Blz]; ok {
-		BanksByPlz[bank.Blz] = append(bankArray, bank)
-	} else {
-		BanksByPlz[bank.Blz] = []domain.Bank{bank}
 	}
 }
 

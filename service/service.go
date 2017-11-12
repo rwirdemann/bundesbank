@@ -48,7 +48,7 @@ func banks(w http.ResponseWriter, r *http.Request) {
 }
 
 func queryByBlz(blz string, w http.ResponseWriter) {
-	if banks, ok := BanksByPlz[blz]; ok {
+	if banks, ok := domain.GetRepositoryInstance().ByBlz(blz); ok {
 		response := ResponseWrapper{Banks: banks}
 		json := util.Json(response)
 		w.Header().Set("Content-Type", "application/json")
@@ -59,8 +59,8 @@ func queryByBlz(blz string, w http.ResponseWriter) {
 }
 
 func queryByBic(bic string, w http.ResponseWriter) {
-	if bankSlice, ok := BanksByBic[bic]; ok {
-		response := ResponseWrapper{Banks: bankSlice}
+	if banks, ok := domain.GetRepositoryInstance().ByBic(bic); ok {
+		response := ResponseWrapper{Banks: banks}
 		json := util.Json(response)
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, json)
@@ -70,9 +70,8 @@ func queryByBic(bic string, w http.ResponseWriter) {
 }
 
 func queryByName(name string, w http.ResponseWriter) {
-	if bankSlice, ok := BanksByBezeichnung[name]; ok {
-		log.Printf("returning %d matchtes", len(bankSlice))
-		response := ResponseWrapper{Banks: bankSlice}
+	if banks, ok := domain.GetRepositoryInstance().ByBezeichnung(name); ok {
+		response := ResponseWrapper{Banks: banks}
 		json := util.Json(response)
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, json)
