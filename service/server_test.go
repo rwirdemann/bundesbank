@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"bitbucket.org/rwirdemann/bundesbank/util"
+	"bitbucket.org/rwirdemann/bundesbank/domain"
 )
 
 func init()  {
+	Repository = domain.GetRepositoryInstance()
 	ImportBundesbankFile("service_test_data.txt")
 }
 

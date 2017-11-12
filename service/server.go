@@ -19,7 +19,10 @@ type Index struct {
 
 const port = 8091
 
+var Repository domain.BankRepository
+
 func StartService() {
+
 	r := http.NewServeMux()
 	r.HandleFunc("/bundesbank", index)
 	r.HandleFunc("/bundesbank/v1/banks", banks)
@@ -55,7 +58,7 @@ func writeResponse(banks []domain.Bank, w http.ResponseWriter) {
 }
 
 func queryByBlz(blz string, w http.ResponseWriter) {
-	if banks, ok := domain.GetRepositoryInstance().ByBlz(blz); ok {
+	if banks, ok := Repository.ByBlz(blz); ok {
 		writeResponse(banks, w)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
@@ -63,7 +66,7 @@ func queryByBlz(blz string, w http.ResponseWriter) {
 }
 
 func queryByBic(bic string, w http.ResponseWriter) {
-	if banks, ok := domain.GetRepositoryInstance().ByBic(bic); ok {
+	if banks, ok := Repository.ByBic(bic); ok {
 		writeResponse(banks, w)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
@@ -71,7 +74,7 @@ func queryByBic(bic string, w http.ResponseWriter) {
 }
 
 func queryByName(name string, w http.ResponseWriter) {
-	if banks, ok := domain.GetRepositoryInstance().ByBezeichnung(name); ok {
+	if banks, ok := Repository.ByBezeichnung(name); ok {
 		writeResponse(banks, w)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
