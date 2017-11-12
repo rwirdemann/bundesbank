@@ -47,12 +47,16 @@ func banks(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func writeResponse(banks []domain.Bank, w http.ResponseWriter) {
+	response := ResponseWrapper{Banks: banks}
+	json := util.Json(response)
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, json)
+}
+
 func queryByBlz(blz string, w http.ResponseWriter) {
 	if banks, ok := domain.GetRepositoryInstance().ByBlz(blz); ok {
-		response := ResponseWrapper{Banks: banks}
-		json := util.Json(response)
-		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, json)
+		writeResponse(banks, w)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
 	}
@@ -60,10 +64,7 @@ func queryByBlz(blz string, w http.ResponseWriter) {
 
 func queryByBic(bic string, w http.ResponseWriter) {
 	if banks, ok := domain.GetRepositoryInstance().ByBic(bic); ok {
-		response := ResponseWrapper{Banks: banks}
-		json := util.Json(response)
-		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, json)
+		writeResponse(banks, w)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
 	}
@@ -71,15 +72,11 @@ func queryByBic(bic string, w http.ResponseWriter) {
 
 func queryByName(name string, w http.ResponseWriter) {
 	if banks, ok := domain.GetRepositoryInstance().ByBezeichnung(name); ok {
-		response := ResponseWrapper{Banks: banks}
-		json := util.Json(response)
-		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, json)
+		writeResponse(banks, w)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
 	}
 }
-
 
 func index(w http.ResponseWriter, r *http.Request) {
 	hostname := util.GetHostname()
