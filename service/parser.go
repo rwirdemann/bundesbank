@@ -17,18 +17,18 @@ var BanksByBic map[string][]domain.Bank
 var BanksByBezeichnung map[string][]domain.Bank
 
 var Fields = map[string]Field{
-	"blz":                           Field{Start: 0, End: 8},
-	"blzfuehrend":                   Field{Start: 8, End: 9},
-	"bezeichnung":                   Field{Start: 9, End: 67},
-	"plz":                           Field{Start: 67, End: 72},
-	"kurzbezeichnung":               Field{Start: 107, End: 134},
-	"pan":                           Field{Start: 134, End: 139},
-	"bic":                           Field{Start: 139, End: 150},
-	"pruefzifferberechnungsmethode": Field{Start: 150, End: 152},
-	"datensatznummer":               Field{Start: 152, End: 158},
-	"aenderungskennzeichen":         Field{Start: 158, End: 159},
-	"bankleitzahlloeschung":         Field{Start: 159, End: 160},
-	"nachfolgebankleitzahl":         Field{Start: 160, End: 168},
+	"blz":                           {Start: 0, End: 8},
+	"blzfuehrend":                   {Start: 8, End: 9},
+	"bezeichnung":                   {Start: 9, End: 67},
+	"plz":                           {Start: 67, End: 72},
+	"kurzbezeichnung":               {Start: 107, End: 134},
+	"pan":                           {Start: 134, End: 139},
+	"bic":                           {Start: 139, End: 150},
+	"pruefzifferberechnungsmethode": {Start: 150, End: 152},
+	"datensatznummer":               {Start: 152, End: 158},
+	"aenderungskennzeichen":         {Start: 158, End: 159},
+	"bankleitzahlloeschung":         {Start: 159, End: 160},
+	"nachfolgebankleitzahl":         {Start: 160, End: 168},
 }
 
 func ImportBundesbankFile(file string) {
@@ -81,6 +81,7 @@ func addBankToPlzMap(bank domain.Bank) {
 
 func parseLine(line string) domain.Bank {
 	var b domain.Bank
+	b.Id = domain.GetRepositoryInstance().NextId()
 	b.Blz = line[Fields["blz"].Start:Fields["blz"].End]
 	b.Bezeichnung = strings.Trim(line[Fields["bezeichnung"].Start:Fields["bezeichnung"].End], " ")
 	b.PLZ = strings.Trim(line[Fields["plz"].Start:Fields["plz"].End], " ")

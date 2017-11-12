@@ -4,7 +4,7 @@ import "testing"
 
 func AssertEquals(t *testing.T, expect interface{}, actual interface{}) {
 	if expect != actual {
-		t.Errorf("wanted: %v, got: %v", expect, actual)
+		t.Errorf("wanted: %v, \ngot: %v", expect, actual)
 		t.FailNow()
 	}
 }

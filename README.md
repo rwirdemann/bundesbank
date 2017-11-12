@@ -8,6 +8,12 @@
 - listen to file changes
 - convert ANSI file automatically to UTF-8
 
+## Presentation
+
+- implement GET bank by id
+- modify json representation
+- implement POST
+
 ## Install
 
 ```
