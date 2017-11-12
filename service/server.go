@@ -27,8 +27,7 @@ func StartService() {
 	r.HandleFunc("/bundesbank", index)
 	r.HandleFunc("/bundesbank/v1/banks", banks)
 
-	hostname := util.GetHostname()
-	log.Printf("Visit http://%s:%d/bundesbank for API docs...", hostname, port)
+	log.Printf("Visit http://%s:%d/bundesbank for API docs...", util.GetHostname(), port)
 	http.ListenAndServe(":"+strconv.Itoa(port), r)
 }
 
@@ -84,6 +83,6 @@ func queryByName(name string, w http.ResponseWriter) {
 func index(w http.ResponseWriter, r *http.Request) {
 	hostname := util.GetHostname()
 	index := Index{Hostname: hostname, Port: port}
-	template, _ := template.New("index", html.Asset).Parse("html/index.html")
-	template.Execute(w, struct{ Index }{index})
+	t, _ := template.New("index", html.Asset).Parse("html/index.html")
+	t.Execute(w, struct{ Index }{index})
 }
