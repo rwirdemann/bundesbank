@@ -5,6 +5,7 @@ import (
 	"bitbucket.org/rwirdemann/bundesbank/service"
 	"flag"
 	"bitbucket.org/rwirdemann/bundesbank/domain"
+	"bitbucket.org/rwirdemann/bundesbank/parser"
 )
 
 func main() {
@@ -14,7 +15,7 @@ func main() {
 		fmt.Printf("usage: bundesbank -f 'blz-file.txt'\n")
 		return
 	}
-	service.ImportBundesbankFile(*bundesbankFile)
+	parser.ImportBundesbankFile(*bundesbankFile)
 	service.Repository = domain.GetRepositoryInstance()
 	service.StartService()
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/arschles/go-bindata-html-template"
 	"bitbucket.org/rwirdemann/bundesbank/html"
 	"bitbucket.org/rwirdemann/bundesbank/domain"
+	"github.com/gorilla/mux"
 )
 
 // Data struct for index.html
@@ -21,18 +22,29 @@ const port = 8091
 
 var Repository domain.BankRepository
 
-func StartService() {
-
-	r := http.NewServeMux()
+func Router() *mux.Router {
+	r := mux.NewRouter()
 	r.HandleFunc("/bundesbank", index)
 	r.HandleFunc("/bundesbank/v1/banks", banks)
+	r.HandleFunc("/bundesbank/v1/banks/{id}", bankHandler)
+	return r
+}
 
+func StartService() {
 	log.Printf("Visit http://%s:%d/bundesbank for API docs...", util.GetHostname(), port)
-	http.ListenAndServe(":"+strconv.Itoa(port), r)
+	http.ListenAndServe(":"+strconv.Itoa(port), Router())
 }
 
 type ResponseWrapper struct {
 	Banks []domain.Bank
+}
+
+// Live Coding
+func bankHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	if id, ok := vars["id"]; ok {
+		fmt.Printf("Id: %d\n", id)
+	}
 }
 
 func banks(w http.ResponseWriter, r *http.Request) {
