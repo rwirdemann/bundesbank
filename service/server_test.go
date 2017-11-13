@@ -26,8 +26,7 @@ func TestQueryByBlzMatchesOneBank(t *testing.T) {
 	// When: blz is queried
 	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?blz=10010424", nil)
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(banks)
-	handler.ServeHTTP(rr, req)
+	Router().ServeHTTP(rr, req)
 
 	// Then: status is ok
 	util.AssertEquals(t, http.StatusOK, rr.Code)
@@ -42,8 +41,7 @@ func TestQueryByBlzMatchesMoreBanks(t *testing.T) {
 	// When: blz is queried
 	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?blz=10020890", nil)
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(banks)
-	handler.ServeHTTP(rr, req)
+	Router().ServeHTTP(rr, req)
 
 	// Then: status is ok
 	util.AssertEquals(t, http.StatusOK, rr.Code)
@@ -58,8 +56,7 @@ func TestNotFound(t *testing.T) {
 	// When: blz unknown is queried
 	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?blz=1002089", nil)
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(banks)
-	handler.ServeHTTP(rr, req)
+	Router().ServeHTTP(rr, req)
 
 	// Then: status is ok
 	util.AssertEquals(t, http.StatusNotFound, rr.Code)
@@ -74,8 +71,7 @@ func TestQueryByBicMatchesOneBank(t *testing.T) {
 	// When: bic is queried
 	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?bic=AARBDE5W100", nil)
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(banks)
-	handler.ServeHTTP(rr, req)
+	Router().ServeHTTP(rr, req)
 
 	// Then: status is ok
 	util.AssertEquals(t, http.StatusOK, rr.Code)
@@ -90,8 +86,7 @@ func TestQueryByNameMatchesOneBank(t *testing.T) {
 	// When: name is queried
 	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?name=Aareal+Bank", nil)
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(banks)
-	handler.ServeHTTP(rr, req)
+	Router().ServeHTTP(rr, req)
 
 	// Then: status is ok
 	util.AssertEquals(t, http.StatusOK, rr.Code)
@@ -104,18 +99,16 @@ func TestQueryByNameMatchesOneBank(t *testing.T) {
 func TestGetById(t *testing.T) {
 
 	// When: bank with id 1 is gotten
-	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks/2", nil)
+	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks/1", nil)
 	rr := httptest.NewRecorder()
 	Router().ServeHTTP(rr, req)
 
 	// Then: status is ok
 	util.AssertEquals(t, http.StatusOK, rr.Code)
 
-	/*
 	// And: Body contains 1 matching bank
 	expected := b1
 	util.AssertEquals(t, expected, rr.Body.String())
-	*/
 }
 
 func TestSerializeBankResponse(t *testing.T) {
