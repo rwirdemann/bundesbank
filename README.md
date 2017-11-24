@@ -2,8 +2,6 @@
 
 ## TODOs
 
-- Introduce bank repository
-- GET bank by id
 - POST bank, i.e. as mock data for tests
 - listen to file changes
 - convert ANSI file automatically to UTF-8
@@ -13,6 +11,7 @@
 - implement GET bank by id
 - modify json representation
 - implement POST
+- implement DELETE
 
 ## Install
 

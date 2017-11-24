@@ -25,7 +25,7 @@ var Repository domain.BankRepository
 func Router() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/bundesbank", index)
-	r.HandleFunc("/bundesbank/v1/banks", banks)
+	r.HandleFunc("/bundesbank/v1/banks", banksHandler)
 	r.HandleFunc("/bundesbank/v1/banks/{id}", bankHandler)
 	return r
 }
@@ -35,19 +35,28 @@ func StartService() {
 	http.ListenAndServe(":"+strconv.Itoa(port), Router())
 }
 
+func bankHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	if idParam, ok := vars["id"]; ok {
+		if id, err := strconv.Atoi(idParam); err == nil {
+			if bank, ok := domain.GetRepositoryInstance().ById(id); ok {
+				json := util.Json(bank)
+				w.Header().Set("Content-Type", "application/json")
+				fmt.Fprintf(w, json)
+			} else {
+				w.WriteHeader(http.StatusNotFound)
+			}
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}
+}
+
 type ResponseWrapper struct {
 	Banks []domain.Bank
 }
 
-// Live Coding
-func bankHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	if id, ok := vars["id"]; ok {
-		fmt.Printf("Id: %d\n", id)
-	}
-}
-
-func banks(w http.ResponseWriter, r *http.Request) {
+func banksHandler(w http.ResponseWriter, r *http.Request) {
 	if blz, ok := r.URL.Query()["blz"]; ok {
 		queryByBlz(blz[0], w)
 	}

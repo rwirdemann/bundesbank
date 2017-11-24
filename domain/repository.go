@@ -5,16 +5,23 @@ import "sync"
 type BankRepository interface {
 	NextId() int
 	Add(bank Bank)
-	ByBlz(blz string)([]Bank, bool)
-	ByBic(bic string)([]Bank, bool)
-	ByBezeichnung(bezeichnung string)([]Bank, bool)
+	ByBlz(blz string) ([]Bank, bool)
+	ByBic(bic string) ([]Bank, bool)
+	ByBezeichnung(bezeichnung string) ([]Bank, bool)
+	ById(id int) (Bank, bool)
 }
 
 type BankRepositoryMemory struct {
 	id                 int
+	banksById          map[int]Bank
 	banksByBlz         map[string][]Bank
 	banksByBic         map[string][]Bank
 	banksByBezeichnung map[string][]Bank
+}
+
+func (c *BankRepositoryMemory) ById(id int) (Bank, bool) {
+	bank, ok := c.banksById[id]
+	return bank, ok
 }
 
 func (c *BankRepositoryMemory) ByBlz(blz string) ([]Bank, bool) {
@@ -38,6 +45,7 @@ func (c *BankRepositoryMemory) NextId() int {
 }
 
 func (c *BankRepositoryMemory) Add(bank Bank) {
+	c.banksById[bank.Id] = bank
 	c.addBankToBezeichnungMap(bank)
 	c.addBankToBicMap(bank)
 	c.addBankToPlzMap(bank)
@@ -77,6 +85,7 @@ var once sync.Once
 func GetRepositoryInstance() BankRepository {
 	once.Do(func() {
 		r := &BankRepositoryMemory{}
+		r.banksById = make(map[int]Bank)
 		r.banksByBezeichnung = make(map[string][]Bank)
 		r.banksByBic = make(map[string][]Bank)
 		r.banksByBlz = make(map[string][]Bank)
