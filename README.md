@@ -27,7 +27,7 @@ bundesbank -f blz-file.txt // needs to be UTF-8
 
 ## Regenerate HTML assets
 ```
-go-bindata -pkg html -o html/assets.go html/
+go-bindata -pkg api -o api/assets.go api/
 ```
  
 ## Test it

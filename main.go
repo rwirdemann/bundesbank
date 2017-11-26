@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"bitbucket.org/rwirdemann/bundesbank/api"
 	"flag"
 	"bitbucket.org/rwirdemann/bundesbank/bank"
 	"bitbucket.org/rwirdemann/bundesbank/parser"
+	"bitbucket.org/rwirdemann/bundesbank/api"
 )
 
 func main() {

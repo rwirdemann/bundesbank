@@ -6,7 +6,6 @@ import (
 	"log"
 	"strconv"
 	"github.com/arschles/go-bindata-html-template"
-	"bitbucket.org/rwirdemann/bundesbank/html"
 	"bitbucket.org/rwirdemann/bundesbank/bank"
 	"github.com/gorilla/mux"
 	"os"
@@ -104,7 +103,7 @@ func queryByName(name string, w http.ResponseWriter) {
 func index(w http.ResponseWriter, r *http.Request) {
 	hostname := getHostname()
 	index := Index{Hostname: hostname, Port: port}
-	t, _ := template.New("index", html.Asset).Parse("html/index.html")
+	t, _ := template.New("index", Asset).Parse("api/index.html")
 	t.Execute(w, struct{ Index }{index})
 }
 
