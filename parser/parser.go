@@ -27,14 +27,15 @@ var Fields = map[string]Field{
 	"nachfolgebankleitzahl":         {Start: 160, End: 168},
 }
 
-func ImportBundesbankFile(file string) {
+func ImportBundesbankFile(file string, s *bank.Service) {
 	if file, err := os.Open(file); err == nil {
 		defer file.Close()
 
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			b := parseLine(scanner.Text())
-			bank.GetRepositoryInstance().Add(b)
+			b.Id = s.BankRepository.NextId()
+			s.BankRepository.Add(b)
 		}
 	} else {
 		panic(err)
@@ -43,7 +44,6 @@ func ImportBundesbankFile(file string) {
 
 func parseLine(line string) bank.Bank {
 	var b bank.Bank
-	b.Id = bank.GetRepositoryInstance().NextId()
 	b.Blz = line[Fields["blz"].Start:Fields["blz"].End]
 	b.Bezeichnung = strings.Trim(line[Fields["bezeichnung"].Start:Fields["bezeichnung"].End], " ")
 	b.PLZ = strings.Trim(line[Fields["plz"].Start:Fields["plz"].End], " ")

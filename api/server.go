@@ -19,7 +19,7 @@ type Index struct {
 
 const port = 8091
 
-var Repository bank.BankRepository
+var Service *bank.Service
 
 func Router() *mux.Router {
 	r := mux.NewRouter()
@@ -38,7 +38,7 @@ func bankHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	if idParam, ok := vars["id"]; ok {
 		if id, err := strconv.Atoi(idParam); err == nil {
-			if bank, ok := bank.GetRepositoryInstance().ById(id); ok {
+			if bank, ok := Service.BankRepository.ById(id); ok {
 				json := Json(bank)
 				w.Header().Set("Content-Type", "application/json")
 				fmt.Fprintf(w, json)
@@ -77,7 +77,7 @@ func writeResponse(banks []bank.Bank, w http.ResponseWriter) {
 }
 
 func queryByBlz(blz string, w http.ResponseWriter) {
-	if banks, ok := Repository.ByBlz(blz); ok {
+	if banks, ok := Service.BankRepository.ByBlz(blz); ok {
 		writeResponse(banks, w)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
@@ -85,7 +85,7 @@ func queryByBlz(blz string, w http.ResponseWriter) {
 }
 
 func queryByBic(bic string, w http.ResponseWriter) {
-	if banks, ok := Repository.ByBic(bic); ok {
+	if banks, ok := Service.BankRepository.ByBic(bic); ok {
 		writeResponse(banks, w)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
@@ -93,7 +93,7 @@ func queryByBic(bic string, w http.ResponseWriter) {
 }
 
 func queryByName(name string, w http.ResponseWriter) {
-	if banks, ok := Repository.ByBezeichnung(name); ok {
+	if banks, ok := Service.BankRepository.ByBezeichnung(name); ok {
 		writeResponse(banks, w)
 	} else {
 		w.WriteHeader(http.StatusNotFound)

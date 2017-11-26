@@ -15,7 +15,8 @@ func main() {
 		fmt.Printf("usage: bundesbank -f 'blz-file.txt'\n")
 		return
 	}
-	parser.ImportBundesbankFile(*bundesbankFile)
-	api.Repository = bank.GetRepositoryInstance()
+
+	api.Service = bank.NewBankService(bank.NewFileRepository())
+	parser.ImportBundesbankFile(*bundesbankFile, api.Service)
 	api.StartService()
 }
