@@ -4,7 +4,7 @@ import (
 	"strings"
 	"os"
 	"bufio"
-	"bitbucket.org/rwirdemann/bundesbank/domain"
+	"bitbucket.org/rwirdemann/bundesbank/bank"
 )
 
 type Field struct {
@@ -33,17 +33,17 @@ func ImportBundesbankFile(file string) {
 
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
-			bank := parseLine(scanner.Text())
-			domain.GetRepositoryInstance().Add(bank)
+			b := parseLine(scanner.Text())
+			bank.GetRepositoryInstance().Add(b)
 		}
 	} else {
 		panic(err)
 	}
 }
 
-func parseLine(line string) domain.Bank {
-	var b domain.Bank
-	b.Id = domain.GetRepositoryInstance().NextId()
+func parseLine(line string) bank.Bank {
+	var b bank.Bank
+	b.Id = bank.GetRepositoryInstance().NextId()
 	b.Blz = line[Fields["blz"].Start:Fields["blz"].End]
 	b.Bezeichnung = strings.Trim(line[Fields["bezeichnung"].Start:Fields["bezeichnung"].End], " ")
 	b.PLZ = strings.Trim(line[Fields["plz"].Start:Fields["plz"].End], " ")

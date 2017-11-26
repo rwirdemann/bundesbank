@@ -1,4 +1,4 @@
-package auth
+package user
 
 import (
 	"testing"
@@ -19,7 +19,7 @@ func (r MockUserRepository) FindUser(username string) (User, error) {
 		return User{Username: "Ralf", Password: "test1234"}, nil
 	}
 
-	return User{}, errors.New("auth not found")
+	return User{}, errors.New("user not found")
 }
 
 func init() {

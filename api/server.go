@@ -1,15 +1,15 @@
-package service
+package api
 
 import (
 	"net/http"
 	"fmt"
 	"log"
 	"strconv"
-	"bitbucket.org/rwirdemann/bundesbank/util"
 	"github.com/arschles/go-bindata-html-template"
 	"bitbucket.org/rwirdemann/bundesbank/html"
-	"bitbucket.org/rwirdemann/bundesbank/domain"
+	"bitbucket.org/rwirdemann/bundesbank/bank"
 	"github.com/gorilla/mux"
+	"os"
 )
 
 // Data struct for index.html
@@ -20,7 +20,7 @@ type Index struct {
 
 const port = 8091
 
-var Repository domain.BankRepository
+var Repository bank.BankRepository
 
 func Router() *mux.Router {
 	r := mux.NewRouter()
@@ -31,7 +31,7 @@ func Router() *mux.Router {
 }
 
 func StartService() {
-	log.Printf("Visit http://%s:%d/bundesbank for API docs...", util.GetHostname(), port)
+	log.Printf("Visit http://%s:%d/bundesbank for API docs...", getHostname(), port)
 	http.ListenAndServe(":"+strconv.Itoa(port), Router())
 }
 
@@ -39,8 +39,8 @@ func bankHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	if idParam, ok := vars["id"]; ok {
 		if id, err := strconv.Atoi(idParam); err == nil {
-			if bank, ok := domain.GetRepositoryInstance().ById(id); ok {
-				json := util.Json(bank)
+			if bank, ok := bank.GetRepositoryInstance().ById(id); ok {
+				json := Json(bank)
 				w.Header().Set("Content-Type", "application/json")
 				fmt.Fprintf(w, json)
 			} else {
@@ -53,7 +53,7 @@ func bankHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type ResponseWrapper struct {
-	Banks []domain.Bank
+	Banks []bank.Bank
 }
 
 func banksHandler(w http.ResponseWriter, r *http.Request) {
@@ -70,9 +70,9 @@ func banksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func writeResponse(banks []domain.Bank, w http.ResponseWriter) {
+func writeResponse(banks []bank.Bank, w http.ResponseWriter) {
 	response := ResponseWrapper{Banks: banks}
-	json := util.Json(response)
+	json := Json(response)
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, json)
 }
@@ -102,8 +102,16 @@ func queryByName(name string, w http.ResponseWriter) {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	hostname := util.GetHostname()
+	hostname := getHostname()
 	index := Index{Hostname: hostname, Port: port}
 	t, _ := template.New("index", html.Asset).Parse("html/index.html")
 	t.Execute(w, struct{ Index }{index})
+}
+
+func getHostname() string {
+	if hostname, err := os.Hostname(); err == nil && hostname == "golem" {
+		return "localhost"
+	}
+
+	return "94.130.79.196"
 }

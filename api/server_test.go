@@ -1,17 +1,16 @@
-package service
+package api
 
 import (
 	"testing"
 	"net/http"
 	"net/http/httptest"
-	"bitbucket.org/rwirdemann/bundesbank/util"
-	"bitbucket.org/rwirdemann/bundesbank/domain"
+	"bitbucket.org/rwirdemann/bundesbank/bank"
 	"bitbucket.org/rwirdemann/bundesbank/parser"
 )
 
 func init() {
-	Repository = domain.GetRepositoryInstance()
-	parser.ImportBundesbankFile("../data/service_test_data.txt")
+	Repository = bank.GetRepositoryInstance()
+	parser.ImportBundesbankFile("service_test_data.txt")
 }
 
 const b1 = `{"Id":1,"Blz":"10010424","Bankleitzahlfuehrend":"","Bezeichnung":"Aareal Bank","PLZ":"10666","Kurzbezeichnung":"Aareal Bank","Pan":"26910","BIC":"AARBDE5W100","Pruefzifferberechnungsmethode":"09","Datensatznummer":"004795","Aenderungskennzeichen":"U","Bankleitzahlloeschung":"0","Nachfolgebankleitzahl":"00000000"}`
@@ -29,11 +28,11 @@ func TestQueryByBlzMatchesOneBank(t *testing.T) {
 	Router().ServeHTTP(rr, req)
 
 	// Then: status is ok
-	util.AssertEquals(t, http.StatusOK, rr.Code)
+	AssertEquals(t, http.StatusOK, rr.Code)
 
 	// And: Body contains 1 matching bank
 	expected := `{"Banks":[` + b1 + "]}"
-	util.AssertEquals(t, expected, rr.Body.String())
+	AssertEquals(t, expected, rr.Body.String())
 }
 
 func TestQueryByBlzMatchesMoreBanks(t *testing.T) {
@@ -44,11 +43,11 @@ func TestQueryByBlzMatchesMoreBanks(t *testing.T) {
 	Router().ServeHTTP(rr, req)
 
 	// Then: status is ok
-	util.AssertEquals(t, http.StatusOK, rr.Code)
+	AssertEquals(t, http.StatusOK, rr.Code)
 
 	// And: Body contains 5 matching bank
 	expected := `{"Banks":[` + b2 + "," + b3 + "," + b4 + "," + b5 + "," + b6 + "]}"
-	util.AssertEquals(t, expected, rr.Body.String())
+	AssertEquals(t, expected, rr.Body.String())
 }
 
 func TestNotFound(t *testing.T) {
@@ -59,11 +58,11 @@ func TestNotFound(t *testing.T) {
 	Router().ServeHTTP(rr, req)
 
 	// Then: status is ok
-	util.AssertEquals(t, http.StatusNotFound, rr.Code)
+	AssertEquals(t, http.StatusNotFound, rr.Code)
 
 	// And: Respose body is empty
 	expected := ""
-	util.AssertEquals(t, expected, rr.Body.String())
+	AssertEquals(t, expected, rr.Body.String())
 }
 
 func TestQueryByBicMatchesOneBank(t *testing.T) {
@@ -74,11 +73,11 @@ func TestQueryByBicMatchesOneBank(t *testing.T) {
 	Router().ServeHTTP(rr, req)
 
 	// Then: status is ok
-	util.AssertEquals(t, http.StatusOK, rr.Code)
+	AssertEquals(t, http.StatusOK, rr.Code)
 
 	// And: Body contains 1 matching bank
 	expected := `{"Banks":[{"Id":1,"Blz":"10010424","Bankleitzahlfuehrend":"","Bezeichnung":"Aareal Bank","PLZ":"10666","Kurzbezeichnung":"Aareal Bank","Pan":"26910","BIC":"AARBDE5W100","Pruefzifferberechnungsmethode":"09","Datensatznummer":"004795","Aenderungskennzeichen":"U","Bankleitzahlloeschung":"0","Nachfolgebankleitzahl":"00000000"}]}`
-	util.AssertEquals(t, expected, rr.Body.String())
+	AssertEquals(t, expected, rr.Body.String())
 }
 
 func TestQueryByNameMatchesOneBank(t *testing.T) {
@@ -89,11 +88,11 @@ func TestQueryByNameMatchesOneBank(t *testing.T) {
 	Router().ServeHTTP(rr, req)
 
 	// Then: status is ok
-	util.AssertEquals(t, http.StatusOK, rr.Code)
+	AssertEquals(t, http.StatusOK, rr.Code)
 
 	// And: Body contains 1 matching bank
 	expected := `{"Banks":[{"Id":1,"Blz":"10010424","Bankleitzahlfuehrend":"","Bezeichnung":"Aareal Bank","PLZ":"10666","Kurzbezeichnung":"Aareal Bank","Pan":"26910","BIC":"AARBDE5W100","Pruefzifferberechnungsmethode":"09","Datensatznummer":"004795","Aenderungskennzeichen":"U","Bankleitzahlloeschung":"0","Nachfolgebankleitzahl":"00000000"}]}`
-	util.AssertEquals(t, expected, rr.Body.String())
+	AssertEquals(t, expected, rr.Body.String())
 }
 
 func TestGetById(t *testing.T) {
@@ -104,16 +103,23 @@ func TestGetById(t *testing.T) {
 	Router().ServeHTTP(rr, req)
 
 	// Then: status is ok
-	util.AssertEquals(t, http.StatusOK, rr.Code)
+	AssertEquals(t, http.StatusOK, rr.Code)
 
 	// And: Body contains 1 matching bank
 	expected := b1
-	util.AssertEquals(t, expected, rr.Body.String())
+	AssertEquals(t, expected, rr.Body.String())
 }
 
 func TestSerializeBankResponse(t *testing.T) {
-	response := ResponseWrapper{Banks: []domain.Bank{{Blz: "12345"}}}
-	json := util.Json(response)
+	response := ResponseWrapper{Banks: []bank.Bank{{Blz: "12345"}}}
+	json := Json(response)
 	expected := `{"Banks":[{"Id":0,"Blz":"12345","Bankleitzahlfuehrend":"","Bezeichnung":"","PLZ":"","Kurzbezeichnung":"","Pan":"","BIC":"","Pruefzifferberechnungsmethode":"","Datensatznummer":"","Aenderungskennzeichen":"","Bankleitzahlloeschung":"","Nachfolgebankleitzahl":""}]}`
-	util.AssertEquals(t, expected, json)
+	AssertEquals(t, expected, json)
+}
+
+func AssertEquals(t *testing.T, expect interface{}, actual interface{}) {
+	if expect != actual {
+		t.Errorf("wanted: %v, \ngot: %v", expect, actual)
+		t.FailNow()
+	}
 }

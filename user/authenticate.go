@@ -1,11 +1,11 @@
-package auth
+package user
 
 import (
 	"log"
 	"github.com/dgrijalva/jwt-go"
 )
 
-// Authenticates a auth by username and password. Returns JWT, true on success, "", false otherwise
+// Authenticates a user by username and password. Returns JWT, true on success, "", false otherwise
 func Authenticate(username string, password string, userService UserService) (string, bool) {
 	if !userService.Authenticate(username, password) {
 		return "", false

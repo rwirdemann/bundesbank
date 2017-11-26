@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"bitbucket.org/rwirdemann/bundesbank/service"
+	"bitbucket.org/rwirdemann/bundesbank/api"
 	"flag"
-	"bitbucket.org/rwirdemann/bundesbank/domain"
+	"bitbucket.org/rwirdemann/bundesbank/bank"
 	"bitbucket.org/rwirdemann/bundesbank/parser"
 )
 
@@ -16,6 +16,6 @@ func main() {
 		return
 	}
 	parser.ImportBundesbankFile(*bundesbankFile)
-	service.Repository = domain.GetRepositoryInstance()
-	service.StartService()
+	api.Repository = bank.GetRepositoryInstance()
+	api.StartService()
 }

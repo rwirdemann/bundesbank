@@ -1,4 +1,4 @@
-package auth
+package user
 
 type UserService struct {
 	Repository UserRepository
