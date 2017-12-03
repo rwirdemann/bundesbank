@@ -8,13 +8,14 @@ import (
 	"fmt"
 	"log"
 	"encoding/json"
+	"bitbucket.org/rwirdemann/bundesbank/import"
 )
 
 var service *bank.Service
 
 func init() {
 	Service = bank.NewBankService(bank.NewFileRepository())
-	bank.ImportBundesbankFile("service_test_data.txt", Service)
+	_import.ImportBundesbankFile("service_test_data.txt", Service)
 }
 
 const b1 = `{"Id":1,"Blz":"10010424","Bankleitzahlfuehrend":"","Bezeichnung":"Aareal Bank","PLZ":"10666","Kurzbezeichnung":"Aareal Bank","Pan":"26910","BIC":"AARBDE5W100","Pruefzifferberechnungsmethode":"09","Datensatznummer":"004795","Aenderungskennzeichen":"U","Bankleitzahlloeschung":"0","Nachfolgebankleitzahl":"00000000"}`
@@ -115,7 +116,7 @@ func TestGetById(t *testing.T) {
 }
 
 func TestSerializeBankResponse(t *testing.T) {
-	response := ResponseWrapper{Banks: []bank.Bank{{Blz: "12345"}}}
+	response := bank.ResponseWrapper{Banks: []bank.Bank{{Blz: "12345"}}}
 	json := marshal(response)
 	expected := `{"Banks":[{"Id":0,"Blz":"12345","Bankleitzahlfuehrend":"","Bezeichnung":"","PLZ":"","Kurzbezeichnung":"","Pan":"","BIC":"","Pruefzifferberechnungsmethode":"","Datensatznummer":"","Aenderungskennzeichen":"","Bankleitzahlloeschung":"","Nachfolgebankleitzahl":""}]}`
 	AssertEquals(t, expected, json)
