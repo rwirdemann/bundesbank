@@ -1,4 +1,4 @@
-package parser
+package bank
 
 import (
 	"testing"

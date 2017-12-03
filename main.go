@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"flag"
 	"bitbucket.org/rwirdemann/bundesbank/bank"
-	"bitbucket.org/rwirdemann/bundesbank/parser"
 	"bitbucket.org/rwirdemann/bundesbank/api"
 )
 
@@ -17,6 +16,6 @@ func main() {
 	}
 
 	api.Service = bank.NewBankService(bank.NewFileRepository())
-	parser.ImportBundesbankFile(*bundesbankFile, api.Service)
+	bank.ImportBundesbankFile(*bundesbankFile, api.Service)
 	api.StartService()
 }

@@ -5,12 +5,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"bitbucket.org/rwirdemann/bundesbank/bank"
-	"bitbucket.org/rwirdemann/bundesbank/parser"
 )
 
 func init() {
 	Service = bank.NewBankService(bank.NewFileRepository())
-	parser.ImportBundesbankFile("service_test_data.txt", Service)
+	bank.ImportBundesbankFile("service_test_data.txt", Service)
 }
 
 const b1 = `{"Id":1,"Blz":"10010424","Bankleitzahlfuehrend":"","Bezeichnung":"Aareal Bank","PLZ":"10666","Kurzbezeichnung":"Aareal Bank","Pan":"26910","BIC":"AARBDE5W100","Pruefzifferberechnungsmethode":"09","Datensatznummer":"004795","Aenderungskennzeichen":"U","Bankleitzahlloeschung":"0","Nachfolgebankleitzahl":"00000000"}`
