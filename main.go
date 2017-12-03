@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"flag"
-	"bitbucket.org/rwirdemann/bundesbank/bank"
+	"fmt"
+
 	"bitbucket.org/rwirdemann/bundesbank/api"
+	"bitbucket.org/rwirdemann/bundesbank/bank"
 )
 
 func main() {
