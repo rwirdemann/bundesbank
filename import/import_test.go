@@ -1,4 +1,4 @@
-package bank
+package _import
 
 import (
 	"testing"

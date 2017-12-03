@@ -1,9 +1,10 @@
-package bank
+package _import
 
 import (
 	"strings"
 	"os"
 	"bufio"
+	"bitbucket.org/rwirdemann/bundesbank/bank"
 )
 
 type Field struct {
@@ -26,7 +27,7 @@ var Fields = map[string]Field{
 	"nachfolgebankleitzahl":         {Start: 160, End: 168},
 }
 
-func ImportBundesbankFile(file string, s *Service) {
+func ImportBundesbankFile(file string, s *bank.Service) {
 	if file, err := os.Open(file); err == nil {
 		defer file.Close()
 
@@ -41,8 +42,8 @@ func ImportBundesbankFile(file string, s *Service) {
 	}
 }
 
-func parseLine(line string) Bank {
-	var b Bank
+func parseLine(line string) bank.Bank {
+	var b bank.Bank
 	b.Blz = line[Fields["blz"].Start:Fields["blz"].End]
 	b.Bezeichnung = strings.Trim(line[Fields["bezeichnung"].Start:Fields["bezeichnung"].End], " ")
 	b.PLZ = strings.Trim(line[Fields["plz"].Start:Fields["plz"].End], " ")
