@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"bitbucket.org/rwirdemann/bundesbank/bank"
+	"fmt"
+	"log"
+	"encoding/json"
 )
 
 var service *bank.Service
@@ -113,7 +116,7 @@ func TestGetById(t *testing.T) {
 
 func TestSerializeBankResponse(t *testing.T) {
 	response := ResponseWrapper{Banks: []bank.Bank{{Blz: "12345"}}}
-	json := Json(response)
+	json := marshal(response)
 	expected := `{"Banks":[{"Id":0,"Blz":"12345","Bankleitzahlfuehrend":"","Bezeichnung":"","PLZ":"","Kurzbezeichnung":"","Pan":"","BIC":"","Pruefzifferberechnungsmethode":"","Datensatznummer":"","Aenderungskennzeichen":"","Bankleitzahlloeschung":"","Nachfolgebankleitzahl":""}]}`
 	AssertEquals(t, expected, json)
 }
@@ -123,4 +126,14 @@ func AssertEquals(t *testing.T, expect interface{}, actual interface{}) {
 		t.Errorf("wanted: %v, \ngot: %v", expect, actual)
 		t.FailNow()
 	}
+}
+
+func marshal(entities interface{}) string {
+	var b []byte
+	var err error
+	if b, err = json.Marshal(entities); err == nil {
+		return fmt.Sprintf("%s", string(b[:]))
+	}
+	log.Fatal(err)
+	return ""
 }
