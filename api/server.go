@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"fmt"
 	"log"
 	"strconv"
 	"github.com/arschles/go-bindata-html-template"
@@ -24,7 +23,7 @@ var Service *bank.Service
 func Router() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/bundesbank", index)
-	r.HandleFunc("/bundesbank/v1/banks", banksHandler)
+	r.HandleFunc("/bundesbank/v1/banks", bank.MakeBanksEndpoint(Service))
 	r.HandleFunc("/bundesbank/v1/banks/{id}", bank.MakeBankEndpoint(Service))
 	return r
 }
@@ -36,51 +35,6 @@ func StartService() {
 
 type ResponseWrapper struct {
 	Banks []bank.Bank
-}
-
-func banksHandler(w http.ResponseWriter, r *http.Request) {
-	if blz, ok := r.URL.Query()["blz"]; ok {
-		queryByBlz(blz[0], w)
-	}
-
-	if bic, ok := r.URL.Query()["bic"]; ok {
-		queryByBic(bic[0], w)
-	}
-
-	if name, ok := r.URL.Query()["name"]; ok {
-		queryByName(name[0], w)
-	}
-}
-
-func writeResponse(banks []bank.Bank, w http.ResponseWriter) {
-	response := ResponseWrapper{Banks: banks}
-	json := Json(response)
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, json)
-}
-
-func queryByBlz(blz string, w http.ResponseWriter) {
-	if banks, ok := Service.BankRepository.ByBlz(blz); ok {
-		writeResponse(banks, w)
-	} else {
-		w.WriteHeader(http.StatusNotFound)
-	}
-}
-
-func queryByBic(bic string, w http.ResponseWriter) {
-	if banks, ok := Service.BankRepository.ByBic(bic); ok {
-		writeResponse(banks, w)
-	} else {
-		w.WriteHeader(http.StatusNotFound)
-	}
-}
-
-func queryByName(name string, w http.ResponseWriter) {
-	if banks, ok := Service.BankRepository.ByBezeichnung(name); ok {
-		writeResponse(banks, w)
-	} else {
-		w.WriteHeader(http.StatusNotFound)
-	}
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
