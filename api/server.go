@@ -25,30 +25,13 @@ func Router() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/bundesbank", index)
 	r.HandleFunc("/bundesbank/v1/banks", banksHandler)
-	r.HandleFunc("/bundesbank/v1/banks/{id}", bankHandler)
+	r.HandleFunc("/bundesbank/v1/banks/{id}", bank.MakeBankEndpoint(Service))
 	return r
 }
 
 func StartService() {
 	log.Printf("Visit http://%s:%d/bundesbank for API docs...", getHostname(), port)
 	http.ListenAndServe(":"+strconv.Itoa(port), Router())
-}
-
-func bankHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	if idParam, ok := vars["id"]; ok {
-		if id, err := strconv.Atoi(idParam); err == nil {
-			if bank, ok := Service.BankRepository.ById(id); ok {
-				json := Json(bank)
-				w.Header().Set("Content-Type", "application/json")
-				fmt.Fprintf(w, json)
-			} else {
-				w.WriteHeader(http.StatusNotFound)
-			}
-		} else {
-			w.WriteHeader(http.StatusNotFound)
-		}
-	}
 }
 
 type ResponseWrapper struct {
@@ -108,7 +91,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func getHostname() string {
-	if hostname, err := os.Hostname(); err == nil && hostname == "golem" {
+	if hostname, err := os.Hostname(); err == nil && (hostname == "golem" || hostname == "Ralfs-MBP") {
 		return "localhost"
 	}
 
