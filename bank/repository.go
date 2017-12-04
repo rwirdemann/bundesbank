@@ -9,12 +9,16 @@ type Repository interface {
 	ById(id int) (Bank, bool)
 }
 
-type FileRepository struct {
+type MapBasedRepository struct {
 	id                 int
 	banksById          map[int]Bank
 	banksByBlz         map[string][]Bank
 	banksByBic         map[string][]Bank
 	banksByBezeichnung map[string][]Bank
+}
+
+type FileRepository struct {
+	MapBasedRepository
 }
 
 func NewFileRepository() *FileRepository {
@@ -26,39 +30,39 @@ func NewFileRepository() *FileRepository {
 	return &r
 }
 
-func (c *FileRepository) ById(id int) (Bank, bool) {
+func (c *MapBasedRepository) ById(id int) (Bank, bool) {
 	bank, ok := c.banksById[id]
 	return bank, ok
 }
 
-func (c *FileRepository) ByBlz(blz string) ([]Bank, bool) {
+func (c *MapBasedRepository) ByBlz(blz string) ([]Bank, bool) {
 	banks, ok := c.banksByBlz[blz]
 	return banks, ok
 }
 
-func (c *FileRepository) ByBic(bic string) ([]Bank, bool) {
+func (c *MapBasedRepository) ByBic(bic string) ([]Bank, bool) {
 	banks, ok := c.banksByBic[bic]
 	return banks, ok
 }
 
-func (c *FileRepository) ByBezeichnung(bezeichnung string) ([]Bank, bool) {
+func (c *MapBasedRepository) ByBezeichnung(bezeichnung string) ([]Bank, bool) {
 	banks, ok := c.banksByBezeichnung[bezeichnung]
 	return banks, ok
 }
 
-func (c *FileRepository) NextId() int {
+func (c *MapBasedRepository) NextId() int {
 	c.id++
 	return c.id
 }
 
-func (c *FileRepository) Add(bank Bank) {
+func (c *MapBasedRepository) Add(bank Bank) {
 	c.banksById[bank.Id] = bank
 	c.addBankToBezeichnungMap(bank)
 	c.addBankToBicMap(bank)
 	c.addBankToPlzMap(bank)
 }
 
-func (c *FileRepository) addBankToBezeichnungMap(bank Bank) {
+func (c *MapBasedRepository) addBankToBezeichnungMap(bank Bank) {
 	if bankArray, ok := c.banksByBezeichnung[bank.Bezeichnung]; ok {
 		c.banksByBezeichnung[bank.Bezeichnung] = append(bankArray, bank)
 	} else {
@@ -67,7 +71,7 @@ func (c *FileRepository) addBankToBezeichnungMap(bank Bank) {
 	}
 }
 
-func (c *FileRepository) addBankToBicMap(bank Bank) {
+func (c *MapBasedRepository) addBankToBicMap(bank Bank) {
 	if bank.BIC != "" {
 		if bankArray, ok := c.banksByBic[bank.BIC]; ok {
 			c.banksByBic[bank.BIC] = append(bankArray, bank)
@@ -78,7 +82,7 @@ func (c *FileRepository) addBankToBicMap(bank Bank) {
 	}
 }
 
-func (c *FileRepository) addBankToPlzMap(bank Bank) {
+func (c *MapBasedRepository) addBankToPlzMap(bank Bank) {
 	if bankArray, ok := c.banksByBlz[bank.Blz]; ok {
 		c.banksByBlz[bank.Blz] = append(bankArray, bank)
 	} else {

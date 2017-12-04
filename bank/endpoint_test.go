@@ -5,17 +5,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"github.com/gorilla/mux"
+	"encoding/json"
 )
 
 var router *mux.Router
-
-func init() {
-	s := NewBankService(NewMockRepository())
-
-	router = mux.NewRouter()
-	router.HandleFunc("/bundesbank/v1/byId", MakeBanksEndpoint(s))
-	router.HandleFunc("/bundesbank/v1/byId/{id}", MakeBankEndpoint(s))
-}
 
 const b1 = `{"Id":1,"Blz":"10010424","Bankleitzahlfuehrend":"","Bezeichnung":"Aareal Bank","PLZ":"10666","Kurzbezeichnung":"Aareal Bank","Pan":"26910","BIC":"AARBDE5W100","Pruefzifferberechnungsmethode":"09","Datensatznummer":"004795","Aenderungskennzeichen":"U","Bankleitzahlloeschung":"0","Nachfolgebankleitzahl":"00000000"}`
 const b2 = `{"Id":2,"Blz":"10020890","Bankleitzahlfuehrend":"","Bezeichnung":"UniCredit Bank - HypoVereinsbank","PLZ":"10896","Kurzbezeichnung":"UniCredit Bank-HypoVereinbk","Pan":"22014","BIC":"HYVEDEMM488","Pruefzifferberechnungsmethode":"99","Datensatznummer":"039785","Aenderungskennzeichen":"U","Bankleitzahlloeschung":"0","Nachfolgebankleitzahl":"00000000"}`
@@ -23,6 +16,37 @@ const b3 = `{"Id":3,"Blz":"10020890","Bankleitzahlfuehrend":"","Bezeichnung":"Un
 const b4 = `{"Id":4,"Blz":"10020890","Bankleitzahlfuehrend":"","Bezeichnung":"UniCredit Bank - HypoVereinsbank","PLZ":"16515","Kurzbezeichnung":"UniCredit Bank-HypoVereinbk","Pan":"22014","BIC":"HYVEDEMM488","Pruefzifferberechnungsmethode":"99","Datensatznummer":"049745","Aenderungskennzeichen":"U","Bankleitzahlloeschung":"0","Nachfolgebankleitzahl":"00000000"}`
 const b5 = `{"Id":5,"Blz":"10020890","Bankleitzahlfuehrend":"","Bezeichnung":"UniCredit Bank - HypoVereinsbank","PLZ":"14776","Kurzbezeichnung":"UniCredit Bank-HypoVereinbk","Pan":"22014","BIC":"HYVEDEMM488","Pruefzifferberechnungsmethode":"99","Datensatznummer":"049746","Aenderungskennzeichen":"U","Bankleitzahlloeschung":"0","Nachfolgebankleitzahl":"00000000"}`
 const b6 = `{"Id":6,"Blz":"10020890","Bankleitzahlfuehrend":"","Bezeichnung":"UniCredit Bank - HypoVereinsbank","PLZ":"15711","Kurzbezeichnung":"UniCredit Bank-HypoVereinb","Pan":"k2201","BIC":"4HYVEDEMM48","Pruefzifferberechnungsmethode":"89","Datensatznummer":"904974","Aenderungskennzeichen":"7","Bankleitzahlloeschung":"U","Nachfolgebankleitzahl":"00000000"}`
+
+type MockRepository struct {
+	MapBasedRepository
+}
+
+func init() {
+	r := MockRepository{}
+	r.banksById = make(map[int]Bank)
+	r.banksByBezeichnung = make(map[string][]Bank)
+	r.banksByBic = make(map[string][]Bank)
+	r.banksByBlz = make(map[string][]Bank)
+
+	r.Add(unmarshal(b1))
+	r.Add(unmarshal(b2))
+	r.Add(unmarshal(b3))
+	r.Add(unmarshal(b4))
+	r.Add(unmarshal(b5))
+	r.Add(unmarshal(b6))
+
+	s := NewBankService(&r)
+	
+	router = mux.NewRouter()
+	router.HandleFunc("/bundesbank/v1/byId", MakeBanksEndpoint(s))
+	router.HandleFunc("/bundesbank/v1/byId/{id}", MakeBankEndpoint(s))
+}
+
+func unmarshal(s string) Bank {
+	b := Bank{}
+	json.Unmarshal([]byte(s), &b)
+	return b
+}
 
 func TestQueryByBlzMatchesOneBank(t *testing.T) {
 
