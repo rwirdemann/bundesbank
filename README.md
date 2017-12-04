@@ -2,6 +2,7 @@
 
 ## TODOs
 
+- server_test: Use mock repository
 - POST bank, i.e. as mock data for tests
 - listen to file changes
 - convert ANSI file automatically to UTF-8

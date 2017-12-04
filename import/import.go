@@ -34,8 +34,8 @@ func ImportBundesbankFile(file string, s *bank.Service) {
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			b := parseLine(scanner.Text())
-			b.Id = s.BankRepository.NextId()
-			s.BankRepository.Add(b)
+			b.Id = s.Repository.NextId()
+			s.Repository.Add(b)
 		}
 	} else {
 		panic(err)

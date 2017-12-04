@@ -1,21 +1,20 @@
-package api
+package bank
 
 import (
 	"testing"
 	"net/http"
 	"net/http/httptest"
-	"bitbucket.org/rwirdemann/bundesbank/bank"
-	"fmt"
-	"log"
-	"encoding/json"
-	"bitbucket.org/rwirdemann/bundesbank/import"
+	"github.com/gorilla/mux"
 )
 
-var service *bank.Service
+var router *mux.Router
 
 func init() {
-	Service = bank.NewBankService(bank.NewFileRepository())
-	_import.ImportBundesbankFile("service_test_data.txt", Service)
+	s := NewBankService(NewMockRepository())
+
+	router = mux.NewRouter()
+	router.HandleFunc("/bundesbank/v1/byId", MakeBanksEndpoint(s))
+	router.HandleFunc("/bundesbank/v1/byId/{id}", MakeBankEndpoint(s))
 }
 
 const b1 = `{"Id":1,"Blz":"10010424","Bankleitzahlfuehrend":"","Bezeichnung":"Aareal Bank","PLZ":"10666","Kurzbezeichnung":"Aareal Bank","Pan":"26910","BIC":"AARBDE5W100","Pruefzifferberechnungsmethode":"09","Datensatznummer":"004795","Aenderungskennzeichen":"U","Bankleitzahlloeschung":"0","Nachfolgebankleitzahl":"00000000"}`
@@ -28,9 +27,9 @@ const b6 = `{"Id":6,"Blz":"10020890","Bankleitzahlfuehrend":"","Bezeichnung":"Un
 func TestQueryByBlzMatchesOneBank(t *testing.T) {
 
 	// When: blz is queried
-	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?blz=10010424", nil)
+	req, _ := http.NewRequest("GET", "/bundesbank/v1/byId?blz=10010424", nil)
 	rr := httptest.NewRecorder()
-	Router().ServeHTTP(rr, req)
+	router.ServeHTTP(rr, req)
 
 	// Then: status is ok
 	AssertEquals(t, http.StatusOK, rr.Code)
@@ -43,9 +42,9 @@ func TestQueryByBlzMatchesOneBank(t *testing.T) {
 func TestQueryByBlzMatchesMoreBanks(t *testing.T) {
 
 	// When: blz is queried
-	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?blz=10020890", nil)
+	req, _ := http.NewRequest("GET", "/bundesbank/v1/byId?blz=10020890", nil)
 	rr := httptest.NewRecorder()
-	Router().ServeHTTP(rr, req)
+	router.ServeHTTP(rr, req)
 
 	// Then: status is ok
 	AssertEquals(t, http.StatusOK, rr.Code)
@@ -58,9 +57,9 @@ func TestQueryByBlzMatchesMoreBanks(t *testing.T) {
 func TestNotFound(t *testing.T) {
 
 	// When: blz unknown is queried
-	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?blz=1002089", nil)
+	req, _ := http.NewRequest("GET", "/bundesbank/v1/byId?blz=1002089", nil)
 	rr := httptest.NewRecorder()
-	Router().ServeHTTP(rr, req)
+	router.ServeHTTP(rr, req)
 
 	// Then: status is ok
 	AssertEquals(t, http.StatusNotFound, rr.Code)
@@ -73,9 +72,9 @@ func TestNotFound(t *testing.T) {
 func TestQueryByBicMatchesOneBank(t *testing.T) {
 
 	// When: bic is queried
-	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?bic=AARBDE5W100", nil)
+	req, _ := http.NewRequest("GET", "/bundesbank/v1/byId?bic=AARBDE5W100", nil)
 	rr := httptest.NewRecorder()
-	Router().ServeHTTP(rr, req)
+	router.ServeHTTP(rr, req)
 
 	// Then: status is ok
 	AssertEquals(t, http.StatusOK, rr.Code)
@@ -88,9 +87,9 @@ func TestQueryByBicMatchesOneBank(t *testing.T) {
 func TestQueryByNameMatchesOneBank(t *testing.T) {
 
 	// When: name is queried
-	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks?name=Aareal+Bank", nil)
+	req, _ := http.NewRequest("GET", "/bundesbank/v1/byId?name=Aareal+Bank", nil)
 	rr := httptest.NewRecorder()
-	Router().ServeHTTP(rr, req)
+	router.ServeHTTP(rr, req)
 
 	// Then: status is ok
 	AssertEquals(t, http.StatusOK, rr.Code)
@@ -103,9 +102,9 @@ func TestQueryByNameMatchesOneBank(t *testing.T) {
 func TestGetById(t *testing.T) {
 
 	// When: bank with id 1 is gotten
-	req, _ := http.NewRequest("GET", "/bundesbank/v1/banks/1", nil)
+	req, _ := http.NewRequest("GET", "/bundesbank/v1/byId/1", nil)
 	rr := httptest.NewRecorder()
-	Router().ServeHTTP(rr, req)
+	router.ServeHTTP(rr, req)
 
 	// Then: status is ok
 	AssertEquals(t, http.StatusOK, rr.Code)
@@ -116,7 +115,7 @@ func TestGetById(t *testing.T) {
 }
 
 func TestSerializeBankResponse(t *testing.T) {
-	response := bank.ResponseWrapper{Banks: []bank.Bank{{Blz: "12345"}}}
+	response := ResponseWrapper{Banks: []Bank{{Blz: "12345"}}}
 	json := marshal(response)
 	expected := `{"Banks":[{"Id":0,"Blz":"12345","Bankleitzahlfuehrend":"","Bezeichnung":"","PLZ":"","Kurzbezeichnung":"","Pan":"","BIC":"","Pruefzifferberechnungsmethode":"","Datensatznummer":"","Aenderungskennzeichen":"","Bankleitzahlloeschung":"","Nachfolgebankleitzahl":""}]}`
 	AssertEquals(t, expected, json)
@@ -127,14 +126,4 @@ func AssertEquals(t *testing.T, expect interface{}, actual interface{}) {
 		t.Errorf("wanted: %v, \ngot: %v", expect, actual)
 		t.FailNow()
 	}
-}
-
-func marshal(entities interface{}) string {
-	var b []byte
-	var err error
-	if b, err = json.Marshal(entities); err == nil {
-		return fmt.Sprintf("%s", string(b[:]))
-	}
-	log.Fatal(err)
-	return ""
 }

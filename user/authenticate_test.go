@@ -3,8 +3,6 @@ package user
 import (
 	"testing"
 
-	"fmt"
-
 	"bitbucket.org/rwirdemann/go-workshop/shop/common"
 	"bitbucket.org/rwirdemann/go-workshop/shop/user/util"
 	"errors"
@@ -28,7 +26,6 @@ func init() {
 
 func TestSuccessfullAuthentication(t *testing.T) {
 	tokenString, ok := Authenticate("ralf", "test1234", userService)
-	fmt.Printf("Token: %s", tokenString)
 	util.AssertTrue(t, ok)
 	username, err := common.ValidateToken(tokenString)
 	util.AssertNil(t, err)

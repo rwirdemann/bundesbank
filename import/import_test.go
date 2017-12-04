@@ -28,4 +28,3 @@ func AssertEquals(t *testing.T, expect interface{}, actual interface{}) {
 		t.FailNow()
 	}
 }
-

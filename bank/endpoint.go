@@ -53,7 +53,7 @@ func writeResponse(banks []Bank, w http.ResponseWriter) {
 }
 
 func queryByBlz(blz string, s *Service, w http.ResponseWriter) {
-	if banks, ok := s.BankRepository.ByBlz(blz); ok {
+	if banks, ok := s.Repository.ByBlz(blz); ok {
 		writeResponse(banks, w)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
@@ -61,7 +61,7 @@ func queryByBlz(blz string, s *Service, w http.ResponseWriter) {
 }
 
 func queryByBic(bic string, s *Service, w http.ResponseWriter) {
-	if banks, ok := s.BankRepository.ByBic(bic); ok {
+	if banks, ok := s.Repository.ByBic(bic); ok {
 		writeResponse(banks, w)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
@@ -69,7 +69,7 @@ func queryByBic(bic string, s *Service, w http.ResponseWriter) {
 }
 
 func queryByName(name string, s *Service, w http.ResponseWriter) {
-	if banks, ok := s.BankRepository.ByBezeichnung(name); ok {
+	if banks, ok := s.Repository.ByBezeichnung(name); ok {
 		writeResponse(banks, w)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
